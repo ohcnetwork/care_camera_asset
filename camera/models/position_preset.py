@@ -10,7 +10,7 @@ from care.utils.models.validators import JSONFieldSchemaValidator
 class PositionPreset(BaseModel):
     name = models.CharField(max_length=255, null=True)
     asset_bed = models.ForeignKey(
-        AssetBed, on_delete=models.PROTECT, related_name="camera_presets"
+        AssetBed, on_delete=models.PROTECT, related_name="camera_position_presets"
     )
     position = models.JSONField(
         validators=[JSONFieldSchemaValidator(CAMERA_PRESET_POSITION_SCHEMA)]

@@ -9,5 +9,5 @@ def soft_delete_camera_presets(sender, instance, **kwargs):
     """
     Soft delete connected camera presets when an AssetBed is deleted.
     """
-    if hasattr(instance, "camera_presets"):
+    if hasattr(instance, "camera_position_presets"):
         instance.camera_presets.update(deleted=True)

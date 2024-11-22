@@ -1,9 +1,8 @@
-from rest_framework import status
-from rest_framework.test import APITestCase
-
 from care.users.models import User
 from care.utils.assetintegration.asset_classes import AssetClasses
 from care.utils.tests.test_utils import TestUtils
+from rest_framework.test import APITestCase
+from rest_framework import status
 
 
 class AssetBedCameraPresetViewSetTestCase(TestUtils, APITestCase):
@@ -31,12 +30,9 @@ class AssetBedCameraPresetViewSetTestCase(TestUtils, APITestCase):
         cls.asset_bed2 = cls.create_assetbed(cls.bed, cls.asset2)
 
     def get_base_url(self, asset_bed_id=None):
-        return f"/api/camera/assetbed/{asset_bed_id or self.asset_bed1.external_id}/camera_presets/"
+        return f"/api/camera/assetbed/position_presets/?assetbed_external_id={asset_bed_id or self.asset_bed1.external_id}"
 
     def test_create_camera_preset_without_position(self):
-        print("\n"*10)
-        print(self.get_base_url())
-        print("\n"*10)
         res = self.client.post(
             self.get_base_url(),
             {
@@ -112,14 +108,14 @@ class AssetBedCameraPresetViewSetTestCase(TestUtils, APITestCase):
 
         # Check if preset in asset preset list
         res = self.client.get(
-            f"/api/v1/asset/{asset_bed.asset.external_id}/camera_presets/"
+            f"/api/camera/position_presets/?asset_external_id={asset_bed.asset.external_id}"
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertContains(res, preset_external_id)
 
         # Check if preset in bed preset list
         res = self.client.get(
-            f"/api/v1/bed/{asset_bed.bed.external_id}/camera_presets/"
+            f"/api/camera/position_presets/?bed_external_id={asset_bed.bed.external_id}"
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertContains(res, preset_external_id)
