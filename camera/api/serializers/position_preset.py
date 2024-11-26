@@ -38,12 +38,3 @@ class PositionPresetSerializer(serializers.ModelSerializer):
             msg = "Name should be unique. Another preset related to this bed already uses the same name."
             raise ValidationError(msg)
         return value
-
-    def create(self, validated_data):
-        validated_data["created_by"] = self.context["request"].user
-        validated_data["asset_bed"] = self.get_asset_bed_obj()
-        return super().create(validated_data)
-
-    def update(self, instance, validated_data):
-        validated_data["updated_by"] = self.context["request"].user
-        return super().update(instance, validated_data)
