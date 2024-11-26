@@ -77,6 +77,7 @@ class PositionPresetViewSet(ModelViewSet):
         return get_object_or_404(queryset)
 
     def get_queryset(self):
+        queryset = super().get_queryset()
         assetbed_external_id = self.request.query_params.get("assetbed_external_id")
         asset_external_id = self.request.query_params.get("asset_external_id")
         bed_external_id = self.request.query_params.get("bed_external_id")
@@ -92,19 +93,13 @@ class PositionPresetViewSet(ModelViewSet):
                 )
 
         if assetbed_external_id:
-            return super().get_queryset().filter(asset_bed=self.get_asset_bed_obj())
+            return queryset.filter(asset_bed=self.get_asset_bed_obj())
         if asset_external_id:
-            return (
-                super()
-                .get_queryset()
-                .filter(asset_bed__asset=self.get_asset_obj(asset_external_id))
+            return queryset.filter(
+                asset_bed__asset=self.get_asset_obj(asset_external_id)
             )
         if bed_external_id:
-            return (
-                super()
-                .get_queryset()
-                .filter(asset_bed__bed=self.get_bed_obj(bed_external_id))
-            )
+            return queryset.filter(asset_bed__bed=self.get_bed_obj(bed_external_id))
 
         raise NotFound
 
