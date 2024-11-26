@@ -1,21 +1,12 @@
 from rest_framework.routers import DefaultRouter
-from camera.api.viewsets.position_preset import (
-    AssetBedCameraPositionPresetViewSet,
-    PresetPositionViewSet,
-)
+from camera.api.viewsets.position_preset import PositionPresetViewSet
 
 camera_router = DefaultRouter()
 
 camera_router.register(
-    r"assetbed/position_presets",
-    AssetBedCameraPositionPresetViewSet,
-    basename="assetbed-camera-presets",
-)
-
-camera_router.register(
-    r"position_presets",
-    PresetPositionViewSet,
-    basename="camera-presets",
+    r"position-presets",
+    PositionPresetViewSet,
+    basename="camera-position-presets",
 )
 
 
