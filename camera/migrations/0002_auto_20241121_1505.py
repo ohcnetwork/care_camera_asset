@@ -11,7 +11,7 @@ def migrate_camera_preset_to_position_preset(apps, schema_editor):
 
     position_presets = [
         PositionPreset(
-            id=preset.id,
+            external_id=preset.external_id,
             name=preset.name,
             asset_bed=preset.asset_bed,
             position=preset.position,
