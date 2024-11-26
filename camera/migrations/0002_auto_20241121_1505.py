@@ -4,7 +4,12 @@ from django.db import migrations
 
 
 def migrate_camera_preset_to_position_preset(apps, schema_editor):
-    CameraPreset = apps.get_model("facility", "CameraPreset")
+    try:
+        CameraPreset = apps.get_model("facility", "CameraPreset")
+    except LookupError:
+        # If CameraPreset model doesn't exist, skip the migration
+        return
+
     PositionPreset = apps.get_model("camera", "PositionPreset")
 
     camera_presets = CameraPreset.objects.all()
