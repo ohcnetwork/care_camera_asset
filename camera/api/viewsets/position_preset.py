@@ -93,7 +93,9 @@ class PositionPresetViewSet(ModelViewSet):
                 )
 
         if assetbed_external_id:
-            return queryset.filter(asset_bed=self.get_asset_bed_obj())
+            return queryset.filter(
+                asset_bed=self.get_asset_bed_obj(assetbed_external_id)
+            )
         if asset_external_id:
             return queryset.filter(
                 asset_bed__asset=self.get_asset_obj(asset_external_id)
@@ -113,7 +115,10 @@ class PositionPresetViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(
-            asset_bed=self.get_asset_bed_obj(), created_by=self.request.user
+            asset_bed=self.get_asset_bed_obj(
+                self.request.query_params.get("assetbed_external_id")
+            ),
+            created_by=self.request.user,
         )
 
     def perform_update(self, serializer):
