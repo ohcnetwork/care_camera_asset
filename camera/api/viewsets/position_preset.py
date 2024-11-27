@@ -106,7 +106,9 @@ class PositionPresetViewSet(ModelViewSet):
     def get_serializer_context(self):
         context = super().get_serializer_context()
         if self.action == "create":
-            context["asset_bed"] = self.get_asset_bed_obj()
+            context["asset_bed"] = self.get_asset_bed_obj(
+                self.request.query_params.get("assetbed_external_id")
+            )
         return context
 
     def perform_create(self, serializer):
