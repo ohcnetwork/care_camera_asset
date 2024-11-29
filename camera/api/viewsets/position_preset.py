@@ -103,6 +103,9 @@ class PositionPresetViewSet(ModelViewSet):
         if bed_external_id:
             return queryset.filter(asset_bed__bed=self.get_bed_obj(bed_external_id))
 
+        if self.kwargs.get("external_id"):
+            return queryset.filter(external_id=self.kwargs.get("external_id"))
+
         raise NotFound
 
     def get_serializer_context(self):
