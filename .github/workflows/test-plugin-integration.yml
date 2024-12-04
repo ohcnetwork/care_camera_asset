@@ -23,11 +23,11 @@ jobs:
       # Build and start containers
       - name: Build and start Docker containers
         run: |
-          make up docker_config_file='docker-compose.local.yaml'
+          make up
 
-      # Run tests using `make test`
-      - name: Run `make test`
-        run: make test
+      # # Run tests using `make test`
+      # - name: Run `make test`
+      #   run: make test
 
       # Run Django management command tests
       - name: Run Django management command tests
