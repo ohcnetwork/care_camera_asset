@@ -16,11 +16,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: ohcnetwork/care
+          ref:
 
       # Modify ADDITIONAL_PLUGS in .local.env
       - name: Update ADDITIONAL_PLUGS in .local.env
         run: |
-          sed -i '/^ADDITIONAL_PLUGS=/c\ADDITIONAL_PLUGS=[{\"name\": \"camera\", \"package_name\": \"git+https://github.com/ohcnetwork/care_camera_asset.git\", \"version\": \"@main\", \"configs\": {}}]' ./docker/.local.env
+          branch_name=$(echo $GITHUB_REF_NAME)
+          sed -i '/^ADDITIONAL_PLUGS=/c\ADDITIONAL_PLUGS=[{"name": "camera", "package_name": "git+https://github.com/ohcnetwork/care_camera_asset.git", "version": "@$branch_name", "configs": {}}]' ./docker/.local.env
+
 
       # Build and start containers
       - name: Build and start Docker containers
