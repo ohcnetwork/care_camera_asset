@@ -3,6 +3,7 @@ from care.utils.assetintegration.asset_classes import AssetClasses
 from care.utils.tests.test_utils import TestUtils
 from rest_framework.test import APITestCase
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from camera.utils.onvif import OnvifAsset
 
 
@@ -32,6 +33,10 @@ class AssetBedCameraPresetViewSetTestCase(TestUtils, APITestCase):
 
     def get_base_url(self, asset_bed_id=None):
         return f"/api/camera/position-presets/?assetbed_external_id={asset_bed_id or self.asset_bed1.external_id}"
+
+    def validate_invalid_meta(self, asset_class, meta):
+        with self.assertRaises(ValidationError):
+            asset_class(meta)
 
     def test_create_camera_preset_without_position(self):
         res = self.client.post(
