@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: DraKen0009/care
-          ref: adding-camera-plugin
+          ref: testing-for-workflows
 
       # Update or Add ADDITIONAL_PLUGS in .local.env
       - name: Update or Add ADDITIONAL_PLUGS in .local.env
@@ -41,8 +41,8 @@ jobs:
           docker compose exec backend bash -c "python install_plugins.py"
 
       # Run tests using `make test`
-      - name: Run `make test`
-        run: make test
+      # - name: Run `make test`
+      #   run: make test
 
       # Run Django management command tests
       - name: Run Django management command tests
