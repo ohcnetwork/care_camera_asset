@@ -9,7 +9,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       # Checkout the ohcnetwork/care repository
       - name: Checkout ohcnetwork/care repository
@@ -22,25 +21,22 @@ jobs:
         run: |
           branch_name=${GITHUB_REF_NAME}
           cat > ./plug_config.py << 'EOL'
-from plugs.manager import PlugManager
-from plugs.plug import Plug
-
-camera_plugin = Plug(
-    name="camera",
-    package_name="git+https://github.com/ohcnetwork/care_camera_asset.git",
-    version="@${branch_name}",
-    configs={},
-)
-
-plugs = [camera_plugin]
-
-manager = PlugManager(plugs)
-EOL
+          from plugs.manager import PlugManager
+          from plugs.plug import Plug
+          camera_plugin = Plug(
+            name="camera",
+            package_name="git+https://github.com/ohcnetwork/care_camera_asset.git",
+            version="@${branch_name}",
+            configs={},
+          )
+          plugs = [camera_plugin]
+          manager = PlugManager(plugs)
+          EOL
 
       # Build and start Docker containers
       - name: Build and start Docker containers
         run: |
-          make up     
+          make up
 
       # Run Django management command tests
       - name: Run Django management command tests
