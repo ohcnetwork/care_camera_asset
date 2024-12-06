@@ -21,7 +21,9 @@ jobs:
       - name: Checkout ohcnetwork/care repository
         uses: actions/checkout@v3
         with:
-          repository: ohcnetwork/care
+          repository: DraKen0009/care
+          ref: :adding-camera-plugin
+
 
       # Update the plug_config.py file with the required content
       - name: Update plug_config.py
