@@ -18,15 +18,16 @@ jobs:
 
       # Update the plug_config.py file with the required content
       - name: Update plug_config.py
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
         run: |
-          branch_name=${GITHUB_REF_NAME}
           cat > ./plug_config.py << 'EOL'
           from plugs.manager import PlugManager
           from plugs.plug import Plug
           camera_plugin = Plug(
             name="camera",
             package_name="git+https://github.com/ohcnetwork/care_camera_asset.git",
-            version="@${branch_name}",
+            version="@${BRANCH_NAME}",
             configs={},
           )
           plugs = [camera_plugin]
