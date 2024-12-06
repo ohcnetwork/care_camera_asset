@@ -28,7 +28,7 @@ jobs:
         run: |
           docker compose exec backend bash -c "python install_plugins.py"
 
-      Run tests using `make test`
+      # Run tests using `make test`
       - name: Run `make test`
         run: make test
 
