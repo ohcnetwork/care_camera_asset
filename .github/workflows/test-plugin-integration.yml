@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the DraKen0009/care repository
-      - name: Checkout DraKen0009/care repository
+      # Checkout the ohcnetwork/care repository
+      - name: Checkout ohcnetwork/care repository
         uses: actions/checkout@v3
         with:
           repository: ohcnetwork/care
@@ -20,20 +20,22 @@ jobs:
       # Update the plug_config.py file with the required content
       - name: Update plug_config.py
         run: |
-          branch_name=$(echo "$GITHUB_REF_NAME")
-          echo "from plugs.manager import PlugManager
+          branch_name=${GITHUB_REF_NAME}
+          cat > ./plug_config.py <<EOL
+from plugs.manager import PlugManager
 from plugs.plug import Plug
 
 camera_plugin = Plug(
-    name=\"camera\",
-    package_name=\"git+https://github.com/ohcnetwork/care_camera_asset.git\",
-    version=\"@$branch_name\",
+    name="camera",
+    package_name="git+https://github.com/ohcnetwork/care_camera_asset.git",
+    version="@${branch_name}",
     configs={},
 )
 
 plugs = [camera_plugin]
 
-manager = PlugManager(plugs)" > ./plug_config.py
+manager = PlugManager(plugs)
+EOL
 
       # Build and start Docker containers
       - name: Build and start Docker containers
