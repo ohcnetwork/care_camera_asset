@@ -16,35 +16,37 @@ jobs:
         run: |
           echo "Branch name: $BRANCH_NAME"
         shell: bash
-      # # Checkout the ohcnetwork/care repository
-      # - name: Checkout ohcnetwork/care repository
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: ohcnetwork/care
 
-      # # Update the plug_config.py file with the required content
-      # - name: Update plug_config.py
-      #   run: |
-      #     branch_name=$(basename ${{ github.ref }})
-      #     cat > ./plug_config.py << 'EOL'
-      #     from plugs.manager import PlugManager
-      #     from plugs.plug import Plug
-      #     camera_plugin = Plug(
-      #       name="camera",
-      #       package_name="git+https://github.com/ohcnetwork/care_camera_asset.git",
-      #       version="@${branch_name}"
-      #       configs={},
-      #     )
-      #     plugs = [camera_plugin]
-      #     manager = PlugManager(plugs)
-      #     EOL
+      # Checkout the ohcnetwork/care repository
+      - name: Checkout ohcnetwork/care repository
+        uses: actions/checkout@v3
+        with:
+          repository: ohcnetwork/care
 
-      # # Build and start Docker containers
-      # - name: Build and start Docker containers
-      #   run: |
-      #     make up
+      # Update the plug_config.py file with the required content
+      - name: Update plug_config.py
+        env:
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+        run: |
+          cat > ./plug_config.py << 'EOL'
+          from plugs.manager import PlugManager
+          from plugs.plug import Plug
+          camera_plugin = Plug(
+            name="camera",
+            package_name="git+https://github.com/ohcnetwork/care_camera_asset.git",
+            version="@$BRANCH_NAME"
+            configs={},
+          )
+          plugs = [camera_plugin]
+          manager = PlugManager(plugs)
+          EOL
 
-      # # Run Django management command tests
-      # - name: Run Django management command tests
-      #   run: |
-      #     docker compose exec backend bash -c "python manage.py test camera --keepdb --parallel --shuffle"
+      # Build and start Docker containers
+      - name: Build and start Docker containers
+        run: |
+          make up
+
+      # Run Django management command tests
+      - name: Run Django management command tests
+        run: |
+          docker compose exec backend bash -c "python manage.py test camera --keepdb --parallel --shuffle"
