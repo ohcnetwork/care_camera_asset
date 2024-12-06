@@ -12,23 +12,11 @@ jobs:
 
     steps:
       # Checkout the DraKen0009/care repository
-      - name: Checkout DraKen0009/care repository
+      - name: Checkout ohcnetwork/care repository
         uses: actions/checkout@v3
         with:
-          repository: DraKen0009/care
-          ref: testing-for-workflows
-
-      # Update or Add ADDITIONAL_PLUGS in .local.env
-      - name: Update or Add ADDITIONAL_PLUGS in .local.env
-        run: |
-          branch_name=$(echo "$GITHUB_REF_NAME")
-          if grep -q "^ADDITIONAL_PLUGS=" ./docker/.local.env; then
-            # Replace the existing ADDITIONAL_PLUGS line
-            sed -i "s|^ADDITIONAL_PLUGS=.*|ADDITIONAL_PLUGS=[{\"name\": \"camera\", \"package_name\": \"git+https://github.com/DraKen0009/care_camera_asset.git\", \"version\": \"@$branch_name\", \"configs\": {}}]|" ./docker/.local.env
-          else
-            # Append the ADDITIONAL_PLUGS line
-            echo "ADDITIONAL_PLUGS=[{\"name\": \"camera\", \"package_name\": \"git+https://github.com/DraKen0009/care_camera_asset.git\", \"version\": \"@$branch_name\", \"configs\": {}}]" >> ./docker/.local.env
-          fi
+          repository: ohcnetwork/care
+          ref: adding-camera-plugin
 
       # Build and start Docker containers
       - name: Build and start Docker containers
@@ -40,9 +28,9 @@ jobs:
         run: |
           docker compose exec backend bash -c "python install_plugins.py"
 
-      # Run tests using `make test`
-      # - name: Run `make test`
-      #   run: make test
+      Run tests using `make test`
+      - name: Run `make test`
+        run: make test
 
       # Run Django management command tests
       - name: Run Django management command tests
