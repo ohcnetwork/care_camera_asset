@@ -21,7 +21,7 @@ jobs:
       - name: Update plug_config.py
         run: |
           branch_name=${GITHUB_REF_NAME}
-          cat > ./plug_config.py <<EOL
+          cat > ./plug_config.py << 'EOL'
 from plugs.manager import PlugManager
 from plugs.plug import Plug
 
