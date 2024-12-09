@@ -3,6 +3,8 @@ from care.utils.assetintegration.asset_classes import AssetClasses
 from care.utils.tests.test_utils import TestUtils
 from rest_framework.test import APITestCase
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
+from camera.utils.onvif import OnvifAsset
 
 
 class AssetBedCameraPresetViewSetTestCase(TestUtils, APITestCase):
@@ -30,7 +32,11 @@ class AssetBedCameraPresetViewSetTestCase(TestUtils, APITestCase):
         cls.asset_bed2 = cls.create_assetbed(cls.bed, cls.asset2)
 
     def get_base_url(self, asset_bed_id=None):
-        return f"/api/camera/assetbed/position_presets/?assetbed_external_id={asset_bed_id or self.asset_bed1.external_id}"
+        return f"/api/camera/position-presets/?assetbed_external_id={asset_bed_id or self.asset_bed1.external_id}"
+
+    def validate_invalid_meta(self, asset_class, meta):
+        with self.assertRaises(ValidationError):
+            asset_class(meta)
 
     def test_create_camera_preset_without_position(self):
         res = self.client.post(
@@ -108,14 +114,14 @@ class AssetBedCameraPresetViewSetTestCase(TestUtils, APITestCase):
 
         # Check if preset in asset preset list
         res = self.client.get(
-            f"/api/camera/position_presets/?asset_external_id={asset_bed.asset.external_id}"
+            f"/api/camera/position-presets/?asset_external_id={asset_bed.asset.external_id}"
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertContains(res, preset_external_id)
 
         # Check if preset in bed preset list
         res = self.client.get(
-            f"/api/camera/position_presets/?bed_external_id={asset_bed.bed.external_id}"
+            f"/api/camera/position-presets/?bed_external_id={asset_bed.bed.external_id}"
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertContains(res, preset_external_id)
@@ -136,3 +142,54 @@ class AssetBedCameraPresetViewSetTestCase(TestUtils, APITestCase):
             self.get_base_url(self.asset_bed2.external_id), data, format="json"
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+    def test_meta_validations_for_onvif_asset(self):
+        valid_meta = {
+            "local_ip_address": "192.168.0.1",
+            "camera_access_key": "username:password:access_key",
+            "middleware_hostname": "middleware.local",
+            "insecure_connection": True,
+        }
+        onvif_asset = OnvifAsset(valid_meta)
+        self.assertEqual(onvif_asset.middleware_hostname, "middleware.local")
+        self.assertEqual(onvif_asset.host, "192.168.0.1")
+        self.assertEqual(onvif_asset.username, "username")
+        self.assertEqual(onvif_asset.password, "password")
+        self.assertEqual(onvif_asset.access_key, "access_key")
+        self.assertTrue(onvif_asset.insecure_connection)
+
+        invalid_meta_cases = [
+            # Invalid format for camera_access_key
+            {
+                "id": "123",
+                "local_ip_address": "192.168.0.1",
+                "middleware_hostname": "middleware.local",
+                "camera_access_key": "invalid_format",
+            },
+            # Missing username/password in camera_access_key
+            {
+                "local_ip_address": "192.168.0.1",
+                "middleware_hostname": "middleware.local",
+                "camera_access_key": "invalid_format",
+            },
+            # Missing middleware_hostname
+            {
+                "local_ip_address": "192.168.0.1",
+                "camera_access_key": "username:password:access_key",
+            },
+            # Missing local_ip_address
+            {
+                "middleware_hostname": "middleware.local",
+                "camera_access_key": "username:password:access_key",
+            },
+            # Invalid value for insecure_connection
+            {
+                "local_ip_address": "192.168.0.1",
+                "camera_access_key": "username:password:access_key",
+                "middleware_hostname": "middleware.local",
+                "insecure_connection": "invalid_value",
+            },
+        ]
+        for meta in invalid_meta_cases:
+            self.validate_invalid_meta(OnvifAsset, meta)
