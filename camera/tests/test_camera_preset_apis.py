@@ -143,7 +143,42 @@ class AssetBedCameraPresetViewSetTestCase(TestUtils, APITestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_list_bed_with_deleted_assetbed(self):
+        res = self.client.post(
+            self.get_base_url(self.asset_bed1.external_id),
+            {
+                "name": "Preset with proper position",
+                "position": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "zoom": 1.0,
+                },
+            },
+            format="json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        res = self.client.post(
+            self.get_base_url(self.asset_bed2.external_id),
+            {
+                "name": "Preset with proper position 2",
+                "position": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "zoom": 1.0,
+                },
+            },
+            format="json",
+        )
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        
+        res = self.client.get(f"/api/camera/position-presets/?bed_external_id={self.bed.external_id}")
+        self.assertEqual(len(res.json()["results"]), 2)
 
+        self.asset_bed1.delete()
+        self.asset_bed1.refresh_from_db()
+        res = self.client.get(f"/api/camera/position-presets/?bed_external_id={self.bed.external_id}")
+        self.assertEqual(len(res.json()["results"]), 1)
+    
     def test_meta_validations_for_onvif_asset(self):
         valid_meta = {
             "local_ip_address": "192.168.0.1",
