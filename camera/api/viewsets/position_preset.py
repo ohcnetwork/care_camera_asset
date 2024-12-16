@@ -98,10 +98,14 @@ class PositionPresetViewSet(ModelViewSet):
             )
         if asset_external_id:
             return queryset.filter(
-                asset_bed__asset=self.get_asset_obj(asset_external_id)
+                asset_bed__asset=self.get_asset_obj(asset_external_id),
+                asset_bed__deleted=False
             )
         if bed_external_id:
-            return queryset.filter(asset_bed__bed=self.get_bed_obj(bed_external_id))
+            return queryset.filter(
+                asset_bed__bed=self.get_bed_obj(bed_external_id),
+                asset_bed__deleted=False
+            )
 
         if self.kwargs.get("external_id"):
             return queryset.filter(external_id=self.kwargs.get("external_id"))
